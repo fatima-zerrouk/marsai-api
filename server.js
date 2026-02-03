@@ -1,31 +1,21 @@
-// require("dotenv").config();
-const express = require('express');
-const cors = require('cors');
-const db = require('./config/database'); // utilise la connexion propre
-const app = express();
-const port = process.env.PORT || 3000; // utilise la variable .env
+import 'dotenv/config'
+import express from 'express'
+import cors from 'cors'
+import db from './config/database.config.js'
+import authRoutes from './routes/auth.routes.js'
 
-app.use(
-    cors({
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);
+const app = express()
+const port = process.env.PORT || 3000
 
-// middlewares 
-app.use(express.json());
+app.use(cors({ origin: 'http://localhost:5173', methods: ['GET','POST','PUT','DELETE'], allowedHeaders: ['Content-Type','Authorization'] }))
+app.use(express.json())
 
-// routes
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+app.get('/', (req, res) => res.send('Hello World!'))
+app.use('/auth', authRoutes)
+app.get('/about', (req, res) => res.send('Autre route'))
 
-app.get('/about', (req, res) => {
-    res.send('Autre route');
-});
+app.listen(port, () => console.log(`✅ Server listening on port ${port}`))
 
-// start server
-app.listen(port, () => {
-    console.log(`✅ Example app listening on port ${port}`);
-});
+db.getConnection()
+  .then(() => console.log('✅ Database connected'))
+  .catch(err => console.error('❌ Database connection error:', err))
