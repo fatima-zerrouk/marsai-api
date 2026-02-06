@@ -11,8 +11,8 @@ import { User } from "../models/User.model.js"
 */
 export const findAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll()
-    res.json(users)
+    const users = await User.findAll();
+    res.json(users);
   } catch (err) {
     res.status(500).json({ message: "Erreur serveur" })
   }
@@ -250,4 +250,4 @@ export const deleteUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Erreur serveur" })
   }
-}
+};
