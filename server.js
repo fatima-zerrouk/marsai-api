@@ -1,21 +1,27 @@
-import 'dotenv/config'
-import express from 'express'
-import cors from 'cors'
-import db from './config/database.config.js'
-import authRoutes from './routes/auth.routes.js'
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import db from './config/database.config.js';
+import formRoutes from './routes/form.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
-const app = express()
-const port = process.env.PORT || 3000
+const app = express();
+const port = process.env.PORT || 3001;
 
-app.use(cors({ origin: 'http://localhost:5173', methods: ['GET','POST','PUT','DELETE'], allowedHeaders: ['Content-Type','Authorization'] }))
-app.use(express.json())
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+app.use(express.json());
+app.use('/api/form', formRoutes);
+app.use('/auth', authRoutes);
 
-app.get('/', (req, res) => res.send('Hello World!'))
-app.use('/auth', authRoutes)
-app.get('/about', (req, res) => res.send('Autre route'))
+app.get('/', (req, res) => res.send('Hello World!'));
 
-app.listen(port, () => console.log(`✅ Server listening on port ${port}`))
-
+app.listen(3001, () => console.log('Server running on port 3001'));
 db.getConnection()
   .then(() => console.log('✅ Database connected'))
-  .catch(err => console.error('❌ Database connection error:', err))
+  .catch(err => console.error('❌ Database connection error:', err));
