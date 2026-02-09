@@ -19,7 +19,7 @@ export default [
       ...js.configs.recommended.rules,
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-console': 'warn',
-      eqeqeq: 'error', // force le ===
+      eqeqeq: 'error', // Force le ===
     },
   },
 
