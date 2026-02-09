@@ -34,7 +34,7 @@ export const Form = {
     }
 
     const [movieResult] = await db.query(
-      `UPDATE INTO movies (
+      `INSERT INTO movies (
         original_title,
         english_title,
         youtube_url,
