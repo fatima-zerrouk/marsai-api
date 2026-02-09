@@ -1,4 +1,4 @@
-import { Form } from '../models/form.model.js';
+import { Form } from '../models/submit.model.js';
 
 export const createForm = async (req, res) => {
   try {
