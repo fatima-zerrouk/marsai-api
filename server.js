@@ -4,6 +4,7 @@ import cors from 'cors';
 import db from './config/database.config.js';
 import formRoutes from './routes/form.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import submitRoutes from './routes/submit.routes.js'; 
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -17,6 +18,8 @@ app.use(
 );
 app.use(express.json());
 app.use('/api/form', formRoutes);
+app.use('/api/submit', submitRoutes);
+
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => res.send('Hello World!'));
