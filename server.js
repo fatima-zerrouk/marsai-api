@@ -5,6 +5,8 @@ import db from './config/database.config.js'
 import authRoutes from './routes/auth.routes.js'
 import dashboardRoutes from './routes/dashboard.routes.js'  
 import adminJuryRoutes from './routes/adminJury.routes.js'
+import formRoutes from './routes/form.routes.js'
+import submitRoutes from './routes/submit.routes.js'
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -35,7 +37,7 @@ app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
-app.listen(3001, () => console.log('Server running on port 3001'));
+app.listen(port, () => console.log(`✅ Server listening on port ${port}`))
 db.getConnection()
   .then(() => console.log('✅ Database connected'))
   .catch(err => console.error('❌ Database connection error:', err));
