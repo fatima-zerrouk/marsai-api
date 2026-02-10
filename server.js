@@ -6,8 +6,8 @@ import authRoutes from './routes/auth.routes.js'
 import dashboardRoutes from './routes/dashboard.routes.js'  
 import adminJuryRoutes from './routes/adminJury.routes.js'
 
-const app = express()
-const port = process.env.PORT || 3000
+const app = express();
+const port = process.env.PORT || 3001;
 
 app.use(cors({ origin: 'http://localhost:5173', 
 methods: ['GET','POST','PUT','DELETE'], 
@@ -20,9 +20,22 @@ app.get('/about', (req, res) => res.send('Autre route'))
 app.use('/api/dashboard', dashboardRoutes)
 app.use('/api/admin/jury', adminJuryRoutes)
 
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+app.use(express.json());
+app.use('/api/form', formRoutes);
+app.use('/api/submit', submitRoutes);
 
-app.listen(port, () => console.log(`✅ Server listening on port ${port}`))
+app.use('/auth', authRoutes);
 
+app.get('/', (req, res) => res.send('Hello World!'));
+
+app.listen(3001, () => console.log('Server running on port 3001'));
 db.getConnection()
   .then(() => console.log('✅ Database connected'))
-  .catch(err => console.error('❌ Database connection error:', err))
+  .catch(err => console.error('❌ Database connection error:', err));

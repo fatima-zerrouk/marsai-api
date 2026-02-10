@@ -1,5 +1,5 @@
-import { Router } from 'express'
-import cors from 'cors'
+import { Router } from 'express';
+import cors from 'cors';
 
 import {
   findAllUsers,
@@ -8,18 +8,18 @@ import {
   login,
   updateUser,
   deleteUser,
-} from '../controllers/auth.controller.js'
+} from '../controllers/auth.controller.js';
 
-const router = Router()
-router.use(cors())
+const router = Router();
+router.use(cors());
 
-router.get('/', findAllUsers)
-router.get('/:id', findUserById)
+router.get('/', findAllUsers);
+router.get('/:id', findUserById);
 
-router.post('/register', register)
-router.post('/login', login)
+router.post('/register', register);
+router.post('/login', login);
 
-router.put('/:id', updateUser)
-router.delete('/:id', deleteUser)
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
 
-export default router
+export default router;
