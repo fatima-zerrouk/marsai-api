@@ -1,84 +1,44 @@
-
-import db from "../config/database.config.js"
+import db from '../config/database.config.js'
 
 export const Dashboard = {
 
-  // ───────────────────────────────────────────────
-  // Films évalués
-  // ───────────────────────────────────────────────
-  async getFilmsReviewed() {
-    const [[filmsReviewed]] = await db.query(
-      "SELECT COUNT(DISTINCT movie_id) AS reviewed FROM ratings"
+  async getMoviesCount() {
+    const [[result]] = await db.query(
+      'SELECT COUNT(*) AS count FROM movies'
     )
-    const [[filmsTotal]] = await db.query(
-      "SELECT COUNT(*) AS total FROM movies"
+    return { count: Number(result.count) || 0 }
+  },
+
+  async getJuryStats() {
+    const [[result]] = await db.query(
+      'SELECT COUNT(DISTINCT user_id) AS finishedJury FROM ratings'
     )
-    const percentage = filmsTotal.total === 0 
-      ? 0 
-      : ((filmsReviewed.reviewed / filmsTotal.total) * 100).toFixed(1)
-
-    return { count: filmsReviewed.reviewed, target: filmsTotal.total, percentage }
+    return { finishedJury: Number(result.finishedJury) || 0 }
   },
 
-  // ───────────────────────────────────────────────
-  // Jurés actifs
-  // ───────────────────────────────────────────────
-  async getJurorsStats() {
-    const [[active]] = await db.query(`
-      SELECT COUNT(DISTINCT r.user_id) AS active
-      FROM ratings r
-      JOIN roles_users ru ON ru.user_id = r.user_id
-      JOIN roles ro ON ro.id = ru.role_id
-      WHERE ro.name = 'Jury'
-    `)
-    const [[total]] = await db.query(`
-      SELECT COUNT(*) AS total
-      FROM roles_users ru
-      JOIN roles ro ON ro.id = ru.role_id
-      WHERE ro.name = 'Jury'
-    `)
-
-    return { active: active.active, total: total.total, status: "En cours de délibération" }
+  async getCountries() {
+    const [[result]] = await db.query(
+      'SELECT COUNT(DISTINCT country) AS count FROM directors'
+    )
+    return {
+      count: Number(result.count) || 0,
+      topZone: result.count > 0 ? "Europe" : null
+    }
   },
 
-// ───────────────────────────────────────────────
-// Pays représentés
-// ───────────────────────────────────────────────
-async getCountries() {
-  const [[countries]] = await db.query(
-    "SELECT COUNT(DISTINCT country) AS count FROM movies"
-  )
-
-  return {
-    count: countries.count,
-    topZone: "Europe" // temporaire / mock
-  }
-},
-
-
-  // ───────────────────────────────────────────────
-  // Taux d’occupation workshops
-  // ───────────────────────────────────────────────
-  async getWorkshops() {
-    const [[workshops]] = await db.query(`
-      SELECT IFNULL(SUM(b.quantity) / SUM(e.capacity) * 100, 0) AS occupancy
-      FROM bookings b
-      JOIN events e ON e.id = b.event_id
-      WHERE e.type = 'workshop'
-    `)
-    return { occupancy: Math.round(workshops.occupancy) }
+  async getWorkshopsOccupancy() {
+    return { occupancy: 0 }
   },
 
-  // ───────────────────────────────────────────────
-  // Réalisateurs actifs
-  // ───────────────────────────────────────────────
   async getDirectorsStats() {
-    const [[directors]] = await db.query(
-      "SELECT COUNT(DISTINCT user_id) AS active FROM movies"
+    const [[result]] = await db.query(
+      'SELECT COUNT(*) AS count FROM directors'
     )
-    const [[today]] = await db.query(
-      "SELECT COUNT(*) AS todayIncrease FROM movies WHERE DATE(created_at) = CURDATE()"
-    )
-    return { active: directors.active, todayIncrease: today.todayIncrease }
+
+    return {
+      activeCount: Number(result.count) || 0,
+      todayIncrease: 0
+    }
   }
+
 }

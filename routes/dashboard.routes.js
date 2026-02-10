@@ -13,6 +13,7 @@ router.use(cors())
 | Dashboard Admin - GET /api/admin/dashboard
 |--------------------------------------------------------------------------
 */
-router.get("/admin/dashboard", getAdminDashboard)
+router.get("/", getAdminDashboard)
+
 
 export default router
