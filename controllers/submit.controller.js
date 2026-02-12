@@ -2,22 +2,22 @@ import { Form } from '../models/submit.model.js';
 
 export const createForm = async (req, res) => {
   try {
-    const data = req.body; // contient { formData, collaborateurs } sinon ca marche pas!!!
+    console.log('--- DONNÉES REÇUES DU FRONT ---');
+    console.log(JSON.stringify(req.body, null, 2));
 
-    const result = await Form.create(data);
-
-    console.log('INSERT RESULT:', result);
+    const result = await Form.create(req.body);
 
     res.status(201).json({
       message: 'Formulaire enregistré',
       id: result.insertId,
     });
   } catch (error) {
-    console.log('🔥 MYSQL ERROR MESSAGE:', error.message);
-    console.log('🔥 MYSQL SQL:', error.sql);
-    console.log('🔥 MYSQL SQL MESSAGE:', error.sqlMessage);
-    console.log('🔥 FULL ERROR:', error);
+    console.error('🔥 ERREUR LORS DE LA CRÉATION :');
+    console.error('Message:', error.message);
 
-    res.status(500).json({ error: error.sqlMessage || 'Erreur serveur' });
+    res.status(500).json({ 
+      error: error.message,
+      details: error.sqlMessage || 'Vérifiez la console serveur'
+    });
   }
 };
