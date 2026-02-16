@@ -2,7 +2,15 @@ import { Form } from '../models/submit.model.js';
 
 export const createForm = async (req, res) => {
   try {
-    const data = req.body; // contient { formData, collaborateurs } sinon ca marche pas!!!
+    // 🔹 Logs détaillés pour debug
+    console.log('💡 REQ.BODY RAW:', req.body);
+    console.log('💡 REQ.BODY FIELDS:', req.body.formData);
+
+    const data = req.body; // doit contenir { formData, collaborateurs }
+
+    if (!data || !data.formData) {
+      return res.status(400).json({ error: 'formData manquant dans la requête' });
+    }
 
     const result = await Form.create(data);
 
@@ -18,6 +26,6 @@ export const createForm = async (req, res) => {
     console.log('🔥 MYSQL SQL MESSAGE:', error.sqlMessage);
     console.log('🔥 FULL ERROR:', error);
 
-    res.status(500).json({ error: error.sqlMessage || 'Erreur serveur' });
+    res.status(500).json({ error: error.sqlMessage || error.message || 'Erreur serveur' });
   }
 };
