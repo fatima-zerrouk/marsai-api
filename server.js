@@ -11,26 +11,28 @@ import submitRoutes from './routes/submit.routes.js'
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(express.json())
+app.use(cors({ 
+  origin: [
+    'http://localhost:5173', 
+  ], 
+  methods: ['GET','POST','PUT','DELETE'], 
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true
+}));
 
-app.get('/', (req, res) => res.send('Hello World!'))
-app.use('/auth', authRoutes)
-app.get('/about', (req, res) => res.send('Autre route'))
-app.use('/api/dashboard', dashboardRoutes)
-app.use('/api/admin/jury', adminJuryRoutes)
+app.use(express.json());
+
+// --- ROUTES ---
+app.get('/', (req, res) => res.send('API is running...'));
+
+app.use('/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin/jury', adminJuryRoutes);
 app.use('/api/form', formRoutes);
 app.use('/api/submit', submitRoutes);
-app.use('/auth', authRoutes);
 
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
 
-app.listen(port, () => console.log(`✅ Server listening on port ${port}`))
+app.listen(port, () => console.log(`🚀 Server running on port ${port}`));
 
 db.getConnection()
   .then(() => console.log('✅ Database connected'))
