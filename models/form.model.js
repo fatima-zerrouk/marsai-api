@@ -22,14 +22,21 @@ export const Form = {
     } = formData;
 
     if (
-      !nom || !prenom || !email || !cp || !genre ||
-      !ville || !biographie || !region ||
-      !pays || !telephone || !metier 
+      !nom ||
+      !prenom ||
+      !email ||
+      !cp ||
+      !genre ||
+      !ville ||
+      !biographie ||
+      !region ||
+      !pays ||
+      !telephone ||
+      !metier
     ) {
       throw new Error('Tous les champs obligatoires sont requis');
     }
 
-    
     const [directorResult] = await db.query(
       `INSERT INTO directors (
         firstname,
@@ -63,7 +70,7 @@ export const Form = {
         facebook,
         twitter,
         linkedin,
-        instagram
+        instagram,
       ]
     );
     const directorId = directorResult.insertId;
@@ -80,5 +87,5 @@ export const Form = {
     }
 
     return { directorId };
-  }
+  },
 };
