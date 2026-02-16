@@ -20,10 +20,11 @@ export const Form = {
       creative_process = '',
       ia_tools = '',
       has_subs = false,
-      images = []
+      thumbnail,       // vignette
+      gallery = []     // galerie d’images
     } = formData;
 
-    // 🔹 Validation améliorée : indique exactement quels champs sont manquants
+    // 🔹 Validation champs obligatoires
     const missingFields = [];
     if (!original_title || original_title.trim() === '') missingFields.push('original_title');
     if (!english_title || english_title.trim() === '') missingFields.push('english_title');
@@ -35,8 +36,9 @@ export const Form = {
       throw new Error(`Champs obligatoires manquants : ${missingFields.join(', ')}`);
     }
 
-    const coverImage = images.length > 0 ? images[0] : null;
+    const coverImage = thumbnail?.url || null;
 
+    // 🔹 Insert dans movies
     const [movieResult] = await db.query(
       `INSERT INTO movies (
         original_title,
@@ -70,6 +72,7 @@ export const Form = {
 
     const movieId = movieResult.insertId;
 
+    // 🔹 Insert des collaborateurs
     if (Array.isArray(collaborateurs) && collaborateurs.length > 0) {
       for (const collab of collaborateurs) {
         if (collab.nom && collab.nom.trim() !== '') {
@@ -77,6 +80,18 @@ export const Form = {
             `INSERT INTO collaborators (lastname, contribution, movie_id)
              VALUES (?, ?, ?)`,
             [collab.nom, collab.role || 'Non défini', movieId]
+          );
+        }
+      }
+    }
+
+    // 🔹 Insert de la galerie d’images
+    if (Array.isArray(gallery) && gallery.length > 0) {
+      for (const img of gallery) {
+        if (img.url) {
+          await db.query(
+            `INSERT INTO images (url, movie_id) VALUES (?, ?)`,
+            [img.url, movieId]
           );
         }
       }
