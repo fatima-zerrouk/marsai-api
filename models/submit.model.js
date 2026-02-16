@@ -36,7 +36,7 @@ export const Form = {
       throw new Error(`Champs obligatoires manquants : ${missingFields.join(', ')}`);
     }
 
-    const coverImage = thumbnail?.url || null;
+    // const coverImage = thumbnail?.url || null;
 
     // ✅ INSERT propre SANS director_id
     const [movieResult] = await db.query(
@@ -65,8 +65,7 @@ export const Form = {
         english_synopsis,
         creative_process,
         ia_tools,
-        has_subs ? 1 : 0,
-        coverImage
+        has_subs,
       ]
     );
 
