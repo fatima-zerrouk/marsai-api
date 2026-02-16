@@ -229,7 +229,6 @@ export const updateUser = async (req, res) => {
 |--------------------------------------------------------------------------
 | DELETE /auth/:id
 |--------------------------------------------------------------------------
-| Suppression utilisateur
 */
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
