@@ -1,21 +1,24 @@
-
-
 export const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user || !req.user.roles) {
-      return res.status(403).json({ message: 'Accès refusé' })
+      return res.status(403).json({ message: 'Accès refusé' });
     }
 
-    const hasRole = req.user.roles.some(role =>
-      allowedRoles.includes(role)
-    )
+    const hasRole = req.user.roles.some(role => allowedRoles.includes(role));
 
     if (!hasRole) {
       return res.status(403).json({
         message: 'Vous n’avez pas les permissions nécessaires',
-      })
+      });
     }
 
-    next()
-  }
-}
+    next();
+  };
+};
+
+// export const authorizeRoles = (...allowedRoles) => (req, res, next) => {
+//   const userRoles = req.user?.roles || [];
+//   const hasRole = userRoles.some(role => allowedRoles.includes(role));
+//   if (!hasRole) return res.status(403).json({ message: "Accès refusé" });
+//   next();
+// };

@@ -15,7 +15,7 @@ export const Form = {
       english_synopsis,
       creative_process,
       ia_tools,
-      has_subs
+      has_subs,
     } = formData;
 
     if (
@@ -58,7 +58,7 @@ export const Form = {
         english_synopsis,
         creative_process,
         ia_tools,
-        has_subs
+        has_subs,
       ]
     );
 
@@ -77,5 +77,5 @@ export const Form = {
     }
 
     return { insertId: movieId };
-  }
+  },
 };

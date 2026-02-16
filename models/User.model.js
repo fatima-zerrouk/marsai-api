@@ -1,8 +1,6 @@
-
-import db from '../config/database.config.js'
+import db from '../config/database.config.js';
 
 export const User = {
-
   // ───────────────────────────────────────────────
   // FIND BY EMAIL + ROLES
   // ───────────────────────────────────────────────
@@ -14,9 +12,9 @@ export const User = {
        LEFT JOIN roles r ON ru.role_id = r.id
        WHERE u.email = ?`,
       [email]
-    )
+    );
 
-    if (rows.length === 0) return null
+    if (rows.length === 0) return null;
 
     const user = {
       id: rows[0].id,
@@ -24,53 +22,54 @@ export const User = {
       password: rows[0].password,
       firstname: rows[0].firstname,
       lastname: rows[0].lastname,
-      roles: rows.map(r => r.role).filter(Boolean)
-    }
+      roles: rows.map(r => r.role).filter(Boolean),
+    };
 
-    return user
+    return user;
   },
 
-
   async addRoleByName(userId, roleName) {
-  const [[role]] = await db.query(
-    'SELECT id FROM roles WHERE name = ?',
-    [roleName]
-  )
+    const [[role]] = await db.query('SELECT id FROM roles WHERE name = ?', [
+      roleName,
+    ]);
 
-  if (!role) return
+    if (!role) return;
 
-  await db.query(
-    'INSERT IGNORE INTO roles_users (user_id, role_id) VALUES (?, ?)',
-    [userId, role.id]
-  )
-},
+    await db.query(
+      'INSERT IGNORE INTO roles_users (user_id, role_id) VALUES (?, ?)',
+      [userId, role.id]
+    );
+  },
 
-// ───────────────────────────────────────────────
-// CREATE USER (avec rôle par défaut "jury")
-// ───────────────────────────────────────────────
-async create({ email, password, firstname, lastname }) {
-  const [result] = await db.query(
-    'INSERT INTO users (email, password, firstname, lastname) VALUES (?, ?, ?, ?)',
-    [email, password, firstname, lastname]
-  )
+  // ───────────────────────────────────────────────
+  // CREATE USER (avec rôle par défaut "jury")
+  // ───────────────────────────────────────────────
+  async create({ email, password, firstname, lastname }) {
+    const [result] = await db.query(
+      'INSERT INTO users (email, password, firstname, lastname) VALUES (?, ?, ?, ?)',
+      [email, password, firstname, lastname]
+    );
 
-  const userId = result.insertId
+    const userId = result.insertId;
 
-  // Assigner le rôle "user" par défaut
-  const [roles] = await db.query('SELECT id FROM roles WHERE name = ?', ['jury'])
-  if (roles.length) {
-    await db.query('INSERT INTO roles_users (user_id, role_id) VALUES (?, ?)', [userId, roles[0].id])
-  }
+    // Assigner le rôle "user" par défaut
+    const [roles] = await db.query('SELECT id FROM roles WHERE name = ?', [
+      'jury',
+    ]);
+    if (roles.length) {
+      await db.query(
+        'INSERT INTO roles_users (user_id, role_id) VALUES (?, ?)',
+        [userId, roles[0].id]
+      );
+    }
 
-  return { insertId: userId }
-}
-,
-
+    return { insertId: userId };
+  },
   // ───────────────────────────────────────────────
   // UPDATE USER
   // ───────────────────────────────────────────────
   async update(id, data) {
-    const { email, password, firstname, lastname } = data
+    const { email, password, firstname, lastname } = data;
 
     await db.query(
       `UPDATE users 
@@ -80,7 +79,7 @@ async create({ email, password, firstname, lastname }) {
            lastname = ?
        WHERE id = ?`,
       [email, password, firstname, lastname, id]
-    )
+    );
   },
 
   // ───────────────────────────────────────────────
@@ -92,10 +91,10 @@ async create({ email, password, firstname, lastname }) {
        FROM users u
        LEFT JOIN roles_users ru ON u.id = ru.user_id
        LEFT JOIN roles r ON ru.role_id = r.id`
-    )
+    );
 
     // Regrouper par user
-    const users = {}
+    const users = {};
     rows.forEach(row => {
       if (!users[row.id]) {
         users[row.id] = {
@@ -103,13 +102,13 @@ async create({ email, password, firstname, lastname }) {
           email: row.email,
           firstname: row.firstname,
           lastname: row.lastname,
-          roles: []
-        }
+          roles: [],
+        };
       }
-      if (row.role) users[row.id].roles.push(row.role)
-    })
+      if (row.role) users[row.id].roles.push(row.role);
+    });
 
-    return Object.values(users)
+    return Object.values(users);
   },
 
   // ───────────────────────────────────────────────
@@ -123,35 +122,35 @@ async create({ email, password, firstname, lastname }) {
        LEFT JOIN roles r ON ru.role_id = r.id
        WHERE u.id = ?`,
       [id]
-    )
+    );
 
-    if (rows.length === 0) return null
+    if (rows.length === 0) return null;
 
     return {
       id: rows[0].id,
       email: rows[0].email,
       firstname: rows[0].firstname,
       lastname: rows[0].lastname,
-      roles: rows.map(r => r.role).filter(Boolean)
-    }
+      roles: rows.map(r => r.role).filter(Boolean),
+    };
   },
 
   // ───────────────────────────────────────────────
   // DELETE USER
   // ───────────────────────────────────────────────
   async delete(id) {
-    await db.query('DELETE FROM roles_users WHERE user_id = ?', [id])
-    await db.query('DELETE FROM users WHERE id = ?', [id])
+    await db.query('DELETE FROM roles_users WHERE user_id = ?', [id]);
+    await db.query('DELETE FROM users WHERE id = ?', [id]);
   },
 
   // ───────────────────────────────────────────────
   // ASSIGN ROLE
   // ───────────────────────────────────────────────
   async addRole(userId, roleId) {
-    await db.query(
-      'INSERT INTO roles_users (user_id, role_id) VALUES (?, ?)',
-      [userId, roleId]
-    )
+    await db.query('INSERT INTO roles_users (user_id, role_id) VALUES (?, ?)', [
+      userId,
+      roleId,
+    ]);
   },
 
   // ───────────────────────────────────────────────
@@ -161,6 +160,6 @@ async create({ email, password, firstname, lastname }) {
     await db.query(
       'DELETE FROM roles_users WHERE user_id = ? AND role_id = ?',
       [userId, roleId]
-    )
-  }
-}
+    );
+  },
+};
