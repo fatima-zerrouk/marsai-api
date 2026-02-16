@@ -1,21 +1,23 @@
-
-
-import db from "../config/database.config.js";
+import db from '../config/database.config.js';
 
 export const AdminJuryModel = {
   // Récupérer tous les jurés
   async getAllJury() {
     const [rows] = await db.query(`
-      SELECT u.id, u.firstname, u.lastname, u.email
-      FROM users u
-      INNER JOIN roles_users ru ON u.id = ru.user_id
-      INNER JOIN roles r ON ru.role_id = r.id
-      WHERE r.name = 'Jury'
-      ORDER BY u.firstname ASC
-    `);
+    SELECT u.id, u.firstname, u.lastname, u.email
+    FROM users u
+    INNER JOIN roles_users ru ON u.id = ru.user_id
+    INNER JOIN roles r ON ru.role_id = r.id
+    WHERE r.name = 'Jury'
+      AND u.id NOT IN (
+        SELECT user_id 
+        FROM roles_users 
+        WHERE role_id = (SELECT id FROM roles WHERE name = 'Admin')
+      )
+    ORDER BY u.firstname ASC
+  `);
     return rows;
   },
-
   // Créer un juré
   async createJury({ firstname, lastname, email, password }) {
     // 1. créer l'utilisateur
@@ -30,9 +32,7 @@ export const AdminJuryModel = {
     const userId = result.insertId;
 
     // 2. récupérer l'id du rôle Jury
-    const [[role]] = await db.query(
-      `SELECT id FROM roles WHERE name = 'Jury'`
-    );
+    const [[role]] = await db.query(`SELECT id FROM roles WHERE name = 'Jury'`);
 
     // 3. lier user + rôle Jury
     await db.query(
@@ -46,28 +46,31 @@ export const AdminJuryModel = {
     return { id: userId, firstname, lastname, email };
   },
 
-
-
   // Supprimer un juré
   async deleteJury(userId) {
-    await db.query(`
+    await db.query(
+      `
       DELETE FROM roles_users 
       WHERE user_id = ? 
         AND role_id = (SELECT id FROM roles WHERE name = 'Jury')
-    `, [userId]);
+    `,
+      [userId]
+    );
 
-    await db.query(`
+    await db.query(
+      `
       DELETE FROM users WHERE id = ?
-    `, [userId]);
+    `,
+      [userId]
+    );
   },
 
   // Mettre à jour un juré
-async updateJury(id, firstname, lastname, email) {
+  async updateJury(id, firstname, lastname, email) {
     const [result] = await db.query(
       `UPDATE users SET firstname=?, lastname=?, email=? WHERE id=?`,
       [firstname, lastname, email, id]
     );
     return result;
-  }
-
+  },
 };

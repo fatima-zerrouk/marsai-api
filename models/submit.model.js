@@ -15,12 +15,11 @@ export const Form = {
       duration,
       is_hybrid = false,
       language,
-      original_synopsis = '',
-      english_synopsis = '',
-      creative_process = '',
-      ia_tools = '',
-      has_subs = false,
-      images = []
+      original_synopsis,
+      english_synopsis,
+      creative_process,
+      ia_tools,
+      has_subs,
     } = formData;
 
     // 🔹 Validation améliorée : indique exactement quels champs sont manquants
@@ -63,8 +62,7 @@ export const Form = {
         english_synopsis,
         creative_process,
         ia_tools,
-        has_subs ? 1 : 0,
-        coverImage
+        has_subs,
       ]
     );
 
@@ -83,5 +81,5 @@ export const Form = {
     }
 
     return { insertId: movieId };
-  }
+  },
 };
