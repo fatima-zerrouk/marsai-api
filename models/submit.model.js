@@ -6,7 +6,7 @@ export const Form = {
       throw new Error('Les données du formulaire (formData) sont manquantes');
     }
 
-    const { formData, collaborateurs } = data;
+    const { formData, collaborateurs } = data; // ⬅️ director_id supprimé
 
     const {
       original_title,
@@ -20,17 +20,17 @@ export const Form = {
       creative_process = '',
       ia_tools = '',
       has_subs = false,
-      thumbnail,       // vignette
-      gallery = []     // galerie d’images
+      thumbnail,
+      gallery = []
     } = formData;
 
-    // 🔹 Validation champs obligatoires
+    // ✅ Champs obligatoires backend
     const missingFields = [];
-    if (!original_title || original_title.trim() === '') missingFields.push('original_title');
-    if (!english_title || english_title.trim() === '') missingFields.push('english_title');
-    if (!youtube_url || youtube_url.trim() === '') missingFields.push('youtube_url');
+    if (!original_title?.trim()) missingFields.push('original_title');
+    if (!english_title?.trim()) missingFields.push('english_title');
+    if (!youtube_url?.trim()) missingFields.push('youtube_url');
     if (!duration) missingFields.push('duration');
-    if (!language || language.trim() === '') missingFields.push('language');
+    if (!language?.trim()) missingFields.push('language');
 
     if (missingFields.length > 0) {
       throw new Error(`Champs obligatoires manquants : ${missingFields.join(', ')}`);
@@ -38,7 +38,7 @@ export const Form = {
 
     const coverImage = thumbnail?.url || null;
 
-    // 🔹 Insert dans movies
+    // ✅ INSERT propre SANS director_id
     const [movieResult] = await db.query(
       `INSERT INTO movies (
         original_title,
@@ -72,10 +72,10 @@ export const Form = {
 
     const movieId = movieResult.insertId;
 
-    // 🔹 Insert des collaborateurs
+    // ✅ INSERT collaborateurs
     if (Array.isArray(collaborateurs) && collaborateurs.length > 0) {
       for (const collab of collaborateurs) {
-        if (collab.nom && collab.nom.trim() !== '') {
+        if (collab.nom?.trim()) {
           await db.query(
             `INSERT INTO collaborators (lastname, contribution, movie_id)
              VALUES (?, ?, ?)`,
@@ -85,12 +85,13 @@ export const Form = {
       }
     }
 
-    // 🔹 Insert de la galerie d’images
+    // ✅ INSERT images
     if (Array.isArray(gallery) && gallery.length > 0) {
       for (const img of gallery) {
         if (img.url) {
           await db.query(
-            `INSERT INTO images (url, movie_id) VALUES (?, ?)`,
+            `INSERT INTO images (url, movie_id)
+             VALUES (?, ?)`,
             [img.url, movieId]
           );
         }
