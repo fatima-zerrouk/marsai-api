@@ -10,6 +10,7 @@ import submitRoutes from './routes/submit.routes.js';
 import mailJury from './routes/juryMail.routes.js';
 import adminMoviesRoutes from './routes/adminMovies.routes.js';
 import adminMoviesResult from './routes/adminMoviesResult.routes.js';
+import movieRoutes from './routes/movie.routes.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -34,6 +35,7 @@ app.use('/api/form', formRoutes);
 app.use('/api/submit', submitRoutes);
 app.use('/api/admin/movies', adminMoviesRoutes);
 app.use('/api/admin/movies-result', adminMoviesResult);
+app.use('/api/movies', movieRoutes);
 
 app.listen(port, () => console.log(`✅ Server listening on port ${port}`));
 
