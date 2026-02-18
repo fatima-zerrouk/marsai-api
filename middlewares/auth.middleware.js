@@ -17,5 +17,3 @@ export const authenticate = (req, res, next) => {
     return res.status(401).json({ message: 'Token invalide ou expiré' });
   }
 };
-
-
