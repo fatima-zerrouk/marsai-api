@@ -20,7 +20,7 @@ export const Form = {
       ia_tools = '',
       has_subs = false,
       thumbnail,
-      gallery = []
+      gallery = [],
     } = formData;
 
     // ✅ Vérification des champs obligatoires
@@ -32,7 +32,9 @@ export const Form = {
     if (!language?.trim()) missingFields.push('language');
 
     if (missingFields.length > 0) {
-      throw new Error(`Champs obligatoires manquants : ${missingFields.join(', ')}`);
+      throw new Error(
+        `Champs obligatoires manquants : ${missingFields.join(', ')}`
+      );
     }
 
     const cover_image = thumbnail?.url || null;
@@ -65,7 +67,7 @@ export const Form = {
         creative_process,
         ia_tools,
         has_subs ? 1 : 0,
-        cover_image
+        cover_image,
       ]
     );
 
@@ -91,8 +93,7 @@ export const Form = {
     // ✅ Insertion des images de la galerie (robuste)
     if (Array.isArray(gallery) && gallery.length > 0) {
       for (const img of gallery) {
-        const imageUrl =
-          typeof img === 'string' ? img : img?.url;
+        const imageUrl = typeof img === 'string' ? img : img?.url;
 
         if (imageUrl && imageUrl.trim() !== '') {
           try {
@@ -109,5 +110,5 @@ export const Form = {
     }
 
     return { insertId: movieId };
-  }
+  },
 };
