@@ -9,7 +9,9 @@ export const createForm = async (req, res) => {
     const data = req.body; // doit contenir { formData, collaborateurs }
 
     if (!data || !data.formData) {
-      return res.status(400).json({ error: 'formData manquant dans la requête' });
+      return res
+        .status(400)
+        .json({ error: 'formData manquant dans la requête' });
     }
 
     const result = await Form.create(data);
@@ -26,6 +28,8 @@ export const createForm = async (req, res) => {
     console.log('🔥 MYSQL SQL MESSAGE:', error.sqlMessage);
     console.log('🔥 FULL ERROR:', error);
 
-    res.status(500).json({ error: error.sqlMessage || error.message || 'Erreur serveur' });
+    res
+      .status(500)
+      .json({ error: error.sqlMessage || error.message || 'Erreur serveur' });
   }
 };
