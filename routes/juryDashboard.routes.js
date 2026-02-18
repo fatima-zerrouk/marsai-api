@@ -10,6 +10,5 @@ const router = Router();
 // si c'est bon affiche le dashboard
 router.get('/', authenticate, authorizeRoles('Jury'), juryDashboard);
 
-// les routes dans ce fichier sont accessibles avec /jury-dashboard
 
 export default router;
