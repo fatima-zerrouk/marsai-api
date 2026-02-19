@@ -4,41 +4,54 @@ export const getMovieById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // 1. On récupère les infos du film
-    const [movieRows] = await db.query('SELECT * FROM movies WHERE id = 4', [id]);
+    // 1. On récupère les infos du film (Correction du "WHERE id = 4")
+    const [movieRows] = await db.query('SELECT * FROM movies WHERE id = ?', [id]);
     
     if (movieRows.length === 0) {
       return res.status(404).json({ message: "Film non trouvé" });
     }
     const movie = movieRows[0];
 
-    // 2. On récupère les collaborateurs pour ce film
+    // 2. On récupère les collaborateurs (Correction du "WHERE movie_id = 211")
     const [collabRows] = await db.query(
-      'SELECT lastname, contribution FROM collaborators WHERE movie_id = 211',
+      'SELECT lastname, contribution FROM collaborators WHERE movie_id = ?',
       [id]
     );
 
-    //on récupère les realisateurs
-    const [directorRows] = await db.query(
-      `SELECT u.firstname, u.lastname
-       FROM users u
-       JOIN movies m ON u.id = m.director_id
-       WHERE m.id = ?`,
-      [id]
-    );
+    // // 3. On récupère le réalisateur (Nom + Prénom)
+    // const [directorRows] = await db.query(
+    //   `SELECT u.firstname, u.lastname
+    //    FROM users u
+    //    JOIN movies m ON u.id = m.director_id
+    //    WHERE m.id = ?`,
+    //   [id]
+    // );
+
+    // 3. On récupère le réalisateur (Nom + Prénom) depuis la table directors
+const [directorRows] = await db.query(
+  `SELECT d.firstname, d.lastname
+   FROM directors d
+   JOIN movies m ON d.id = m.director_id
+   WHERE m.id = ?`,
+  [id]
+);
 
 
-// 3. On récupère les images de la galerie pour ce film
-    
 
-    // 3. On envoie le tout au front (React)
+    // On prépare le nom complet du réalisateur
+    const directorName = directorRows.length > 0 
+      ? `${directorRows[0].firstname} ${directorRows[0].lastname}` 
+      : "Réalisateur inconnu";
+
+    // 4. On renvoie tout au front
     res.json({
       ...movie,
-      collaborators: collabRows
+      collaborators: collabRows,
+      director: directorName // ✅ On ajoute cette clé pour le Front
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erreur lors de la récupération du film" });
+    res.status(500).json({ message: "Erreur serveur" });
   }
-};
+}

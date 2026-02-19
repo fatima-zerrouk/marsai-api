@@ -6,11 +6,10 @@ export const Form = {
       throw new Error('Les données du formulaire (formData) sont manquantes');
     }
 
-    // ✅ ON REND L'ID OPTIONNEL
-    // Si pas d'ID, on met null (ou 1 si tu veux qu'il appartienne à l'admin par défaut)
     const finalDirectorId = directorId || null; 
-
     const { formData, collaborateurs } = data;
+    
+    // Extraction des données (destructuring)
     const {
       original_title, english_title, youtube_url, duration,
       is_hybrid = false, language, original_synopsis = '',
@@ -18,7 +17,7 @@ export const Form = {
       has_subs = false, thumbnail, gallery = []
     } = formData;
 
-    // (Garder la vérification des champs obligatoires titre, durée, etc.)
+    // Validation des champs
     const missingFields = [];
     if (!original_title?.trim()) missingFields.push('original_title');
     if (!english_title?.trim()) missingFields.push('english_title');
@@ -36,7 +35,7 @@ export const Form = {
     try {
       await connection.beginTransaction();
 
-      // ➤ Insertion avec le finalDirectorId (qui peut être NULL)
+      // 1. On insère le film avec le director_id
       const [movieResult] = await connection.query(
         `INSERT INTO movies (
           original_title, english_title, youtube_url, duration, 
@@ -52,7 +51,15 @@ export const Form = {
 
       const movieId = movieResult.insertId;
 
-      // ... (Reste du code pour collaborateurs et galerie identique)
+      // 2. ✅ CRUCIAL : On met à jour le réalisateur pour pointer vers ce nouveau film
+      if (finalDirectorId) {
+        await connection.query(
+          `UPDATE directors SET movie_id = ? WHERE id = ?`,
+          [movieId, finalDirectorId]
+        );
+      }
+
+      // 3. Insertion des collaborateurs
       if (Array.isArray(collaborateurs)) {
         for (const collab of collaborateurs) {
           if (collab.nom?.trim()) {
@@ -65,6 +72,7 @@ export const Form = {
         }
       }
 
+      // 4. Insertion de la galerie d'images
       if (Array.isArray(gallery) && gallery.length > 0) {
         for (const img of gallery) {
           const imageUrl = typeof img === 'string' ? img : img?.url;
