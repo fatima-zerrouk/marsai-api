@@ -24,14 +24,19 @@ export const Form = {
 
     // 🔹 Validation améliorée : indique exactement quels champs sont manquants
     const missingFields = [];
-    if (!original_title || original_title.trim() === '') missingFields.push('original_title');
-    if (!english_title || english_title.trim() === '') missingFields.push('english_title');
-    if (!youtube_url || youtube_url.trim() === '') missingFields.push('youtube_url');
+    if (!original_title || original_title.trim() === '')
+      missingFields.push('original_title');
+    if (!english_title || english_title.trim() === '')
+      missingFields.push('english_title');
+    if (!youtube_url || youtube_url.trim() === '')
+      missingFields.push('youtube_url');
     if (!duration) missingFields.push('duration');
     if (!language || language.trim() === '') missingFields.push('language');
 
     if (missingFields.length > 0) {
-      throw new Error(`Champs obligatoires manquants : ${missingFields.join(', ')}`);
+      throw new Error(
+        `Champs obligatoires manquants : ${missingFields.join(', ')}`
+      );
     }
 
     const coverImage = images.length > 0 ? images[0] : null;
