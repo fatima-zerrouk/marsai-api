@@ -27,7 +27,9 @@ export const Form = {
     if (!language?.trim()) missingFields.push('language');
 
     if (missingFields.length > 0) {
-      throw new Error(`Champs obligatoires manquants : ${missingFields.join(', ')}`);
+      throw new Error(
+        `Champs obligatoires manquants : ${missingFields.join(', ')}`
+      );
     }
 
     const cover_image = thumbnail?.url || null;
@@ -64,6 +66,12 @@ export const Form = {
           }
         }
       }
+    }
+
+    // ✅ Insertion des images de la galerie (robuste)
+    if (Array.isArray(gallery) && gallery.length > 0) {
+      for (const img of gallery) {
+        const imageUrl = typeof img === 'string' ? img : img?.url;
 
       if (Array.isArray(gallery) && gallery.length > 0) {
         for (const img of gallery) {
