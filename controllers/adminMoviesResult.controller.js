@@ -7,8 +7,6 @@ export const getMovies = async (req, res) => {
   try {
     const movies = await MovieModel.getAllMovies();
 
-    console.log(movies);
-
     return res.status(200).json({
       success: true,
       count: movies.length,

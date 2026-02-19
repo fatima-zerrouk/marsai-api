@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { AdminJuryModel } from '../models/adminJury.model.js';
 import { sendMail } from '../utils/mailer.js';
+import crypto from 'crypto';
 
 export const AdminJuryController = {
   async getAllJury(req, res) {
@@ -15,12 +16,19 @@ export const AdminJuryController = {
 
   async createJury(req, res) {
     try {
-      const { firstname, lastname, email, password } = req.body;
-      if (!firstname || !lastname || !email || !password) {
+      const { firstname, lastname, email } = req.body;
+
+      if (!firstname || !lastname || !email) {
         return res.status(400).json({ error: 'Tous les champs sont requis' });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      // Générer code temporaire
+      const code = crypto.randomInt(10000000, 100000000).toString();
+
+      // Hasher le code
+      const hashedPassword = await bcrypt.hash(code, 10);
+
+      // Créer le jury avec le code hashé
       const newJury = await AdminJuryModel.createJury({
         firstname,
         lastname,
@@ -28,21 +36,17 @@ export const AdminJuryController = {
         password: hashedPassword,
       });
 
-      // Générer un code temporaire pour le mail (exemple : 6 chiffres)
-      const code = Math.floor(100000 + Math.random() * 900000);
-
-      // Envoyer le mail au juré
+      // Envoyer le mail avec le code en clair
       await sendMail({
-        to: email,
-        subject: 'Votre code pour accéder à MarsAI',
-        html: `<p>Bonjour ${firstname},</p>
-               <p>Voici votre code : <strong>${code}</strong></p>`,
+        toEmail: email,
+        toName: `${firstname} ${lastname}`,
+        code,
       });
 
-      res.status(201).json({ ...newJury, code });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Impossible de créer le juré' });
+      return res.status(201).json(newJury);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erreur création jury' });
     }
   },
 
