@@ -126,41 +126,54 @@ export const register = async (req, res) => {
 | Connexion
 */
 export const login = async (req, res) => {
-  let { email, password } = req.body;
-
-  // Validation présence
-  if (!email || !password) {
-    return res.status(400).json({
-      message: 'Email et mot de passe requis',
-    });
-  }
-
-  // Normalisation
-  email = email.trim().toLowerCase();
-
-  // Validation format (simple)
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(401).json({
-      message: 'Identifiants invalides',
-    });
-  }
-
   try {
+    let { email, password } = req.body;
+
+    // Vérification présence champs
+    if (!email || !password) {
+      return res.status(400).json({
+        message: 'Email et mot de passe requis',
+      });
+    }
+
+    // Normalisation email
+    email = email.trim().toLowerCase();
+
+    // Validation format email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(401).json({
+        message: 'Identifiants invalides',
+      });
+    }
+
+    // Recherche utilisateur
     const user = await User.findByEmail(email);
+
     if (!user) {
       return res.status(401).json({
         message: 'Identifiants invalides',
       });
     }
 
+    // Vérification mot de passe
     const isValidPassword = await bcrypt.compare(password, user.password);
+
     if (!isValidPassword) {
       return res.status(401).json({
         message: 'Identifiants invalides',
       });
     }
 
+    // Vérification obligation changement mot de passe
+    if (user.must_change_password) {
+      return res.status(200).json({
+        mustChangePassword: true,
+        userId: user.id,
+      });
+    }
+
+    // Génération du token JWT
     const token = jwt.sign(
       {
         id: user.id,
@@ -171,10 +184,12 @@ export const login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.json({ token });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
+    return res.status(200).json({
+      token,
+    });
+  } catch (error) {
+    console.error('Erreur login :', error);
+    return res.status(500).json({
       message: 'Erreur serveur',
     });
   }
@@ -222,6 +237,57 @@ export const updateUser = async (req, res) => {
     res.json({ message: 'Utilisateur mis à jour' });
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
+// Route dédiée pour le changement de mot de passe obligatoire
+
+export const changePassword = async (req, res) => {
+  try {
+    const { userId, newPassword } = req.body;
+
+    if (!userId || !newPassword) {
+      return res.status(400).json({
+        message: 'Données manquantes',
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        message: 'Mot de passe trop court (min 8 caractères)',
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: 'Utilisateur introuvable',
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.update(userId, {
+      password: hashedPassword,
+      must_change_password: false,
+    });
+
+    // Génération du token après changement
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        roles: user.roles,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Erreur serveur',
+    });
   }
 };
 
