@@ -1,38 +1,28 @@
 import { Form } from '../models/submit.model.js';
-
 export const createForm = async (req, res) => {
   try {
-    const { formData, collaborateurs, directorId } = req.body;
-
-    // ✅ On a enlevé le "if (!directorId) return res.status(400)..."
-    // Si directorId est absent, il sera juste "undefined"
-
-<<<<<<< feat/jurymail
+    // 🔹 Logs détaillés pour debug
+    console.log('💡 REQ.BODY RAW:', req.body);
+    console.log('💡 REQ.BODY FIELDS:', req.body.formData);
+    const data = req.body; // doit contenir { formData, collaborateurs }
     if (!data || !data.formData) {
       return res
         .status(400)
         .json({ error: 'formData manquant dans la requête' });
-=======
-    if (!formData) {
-      return res.status(400).json({ error: 'Données du film manquantes.' });
->>>>>>> dev
     }
-
-    const result = await Form.create({ formData, collaborateurs }, directorId);
-
+    const result = await Form.create(data);
+    console.log('INSERT RESULT:', result);
     res.status(201).json({
-      message: 'Formulaire enregistré avec succès',
+      message: 'Formulaire enregistré',
       id: result.insertId,
     });
-
-<<<<<<< feat/jurymail
+  } catch (error) {
+    console.log('🔥 MYSQL ERROR MESSAGE:', error.message);
+    console.log('🔥 MYSQL SQL:', error.sql);
+    console.log('🔥 MYSQL SQL MESSAGE:', error.sqlMessage);
+    console.log('🔥 FULL ERROR:', error);
     res
       .status(500)
       .json({ error: error.sqlMessage || error.message || 'Erreur serveur' });
-=======
-  } catch (error) {
-    console.error('🔥 Erreur Controller:', error.message);
-    res.status(500).json({ error: error.message || 'Erreur serveur' });
->>>>>>> dev
   }
 };
