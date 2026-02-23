@@ -20,26 +20,26 @@ export const AdminJuryModel = {
   },
   // Créer un juré
   async createJury({ firstname, lastname, email, password }) {
-    // 1. créer l'utilisateur
+    // 1️⃣ créer l'utilisateur
     const [result] = await db.query(
       `
-      INSERT INTO users (firstname, lastname, email, password)
-      VALUES (?, ?, ?, ?)
-      `,
-      [firstname, lastname, email, password]
+    INSERT INTO users (firstname, lastname, email, password, must_change_password)
+    VALUES (?, ?, ?, ?, ?)
+    `,
+      [firstname, lastname, email, password, true]
     );
 
     const userId = result.insertId;
 
-    // 2. récupérer l'id du rôle Jury
+    // récupérer l'id du rôle Jury
     const [[role]] = await db.query(`SELECT id FROM roles WHERE name = 'Jury'`);
 
-    // 3. lier user + rôle Jury
+    // lier user + rôle Jury
     await db.query(
       `
-      INSERT INTO roles_users (user_id, role_id)
-      VALUES (?, ?)
-      `,
+    INSERT INTO roles_users (user_id, role_id)
+    VALUES (?, ?)
+    `,
       [userId, role.id]
     );
 
