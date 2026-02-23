@@ -17,7 +17,6 @@ export const createForm = async (req, res) => {
       message: 'Formulaire enregistré avec succès',
       id: result.insertId,
     });
-
   } catch (error) {
     console.error('🔥 Erreur Controller:', error.message);
     res.status(500).json({ error: error.message || 'Erreur serveur' });

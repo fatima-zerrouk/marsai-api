@@ -8,7 +8,7 @@
 
 //     // ✅ ON REND L'ID OPTIONNEL
 //     // Si pas d'ID, on met null (ou 1 si tu veux qu'il appartienne à l'admin par défaut)
-//     const finalDirectorId = directorId || null; 
+//     const finalDirectorId = directorId || null;
 
 //     const { formData, collaborateurs } = data;
 //     const {
@@ -34,15 +34,15 @@
 
 //     const cover_image = thumbnail?.url || null;
 //     const connection = await db.getConnection();
-    
+
 //     try {
 //       await connection.beginTransaction();
 
 //       // ➤ Insertion avec le finalDirectorId (qui peut être NULL)
 //       const [movieResult] = await connection.query(
 //         `INSERT INTO movies (
-//           original_title, english_title, youtube_url, duration, 
-//           is_hybrid, language, original_synopsis, english_synopsis, 
+//           original_title, english_title, youtube_url, duration,
+//           is_hybrid, language, original_synopsis, english_synopsis,
 //           creative_process, ia_tools, has_subs, cover_image, director_id
 //         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 //         [
@@ -96,9 +96,6 @@
 //     }
 //   }
 // };
-
-
-
 
 import db from '../config/database.config.js';
 

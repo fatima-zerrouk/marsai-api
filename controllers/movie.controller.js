@@ -5,10 +5,12 @@ export const getMovieById = async (req, res) => {
     const { id } = req.params;
 
     // 1. On récupère les infos du film
-    const [movieRows] = await db.query('SELECT * FROM movies WHERE id = 4', [id]);
-    
+    const [movieRows] = await db.query('SELECT * FROM movies WHERE id = 4', [
+      id,
+    ]);
+
     if (movieRows.length === 0) {
-      return res.status(404).json({ message: "Film non trouvé" });
+      return res.status(404).json({ message: 'Film non trouvé' });
     }
     const movie = movieRows[0];
 
@@ -27,18 +29,15 @@ export const getMovieById = async (req, res) => {
       [id]
     );
 
-
-// 3. On récupère les images de la galerie pour ce film
-    
+    // 3. On récupère les images de la galerie pour ce film
 
     // 3. On envoie le tout au front (React)
     res.json({
       ...movie,
-      collaborators: collabRows
+      collaborators: collabRows,
     });
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erreur lors de la récupération du film" });
+    res.status(500).json({ message: 'Erreur lors de la récupération du film' });
   }
 };
