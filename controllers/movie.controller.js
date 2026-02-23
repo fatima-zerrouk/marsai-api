@@ -8,7 +8,7 @@ export const getMovieById = async (req, res) => {
     const [movieRows] = await db.query('SELECT * FROM movies WHERE id = ?', [id]);
     
     if (movieRows.length === 0) {
-      return res.status(404).json({ message: "Film non trouvé" });
+      return res.status(404).json({ message: 'Film non trouvé' });
     }
     const movie = movieRows[0];
 
@@ -49,7 +49,6 @@ const [directorRows] = await db.query(
       collaborators: collabRows,
       director: directorName // ✅ On ajoute cette clé pour le Front
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erreur serveur" });
