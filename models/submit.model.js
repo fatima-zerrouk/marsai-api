@@ -1,13 +1,13 @@
 import db from '../config/database.config.js';
 
 export const Form = {
-  async create(data, directorId) {
-    if (!data || !data.formData) {
+  async create(data) {
+    // On extrait tout de "data" (envoyé par le contrôleur)
+    const { formData, collaborateurs, directorId } = data;
+
+    if (!formData) {
       throw new Error('Les données du formulaire (formData) sont manquantes');
     }
-
-    const finalDirectorId = directorId || null;
-    const { formData, collaborateurs } = data;
 
     const {
       original_title,
@@ -25,18 +25,15 @@ export const Form = {
       gallery = []
     } = formData;
 
-    // ✅ Validation
+    // ✅ Validation des champs obligatoires
     const missingFields = [];
     if (!original_title?.trim()) missingFields.push('original_title');
     if (!english_title?.trim()) missingFields.push('english_title');
     if (!youtube_url?.trim()) missingFields.push('youtube_url');
-    if (!Number.isInteger(parseInt(duration))) missingFields.push('duration');
     if (!language?.trim()) missingFields.push('language');
 
     if (missingFields.length > 0) {
-      throw new Error(
-        `Champs obligatoires manquants : ${missingFields.join(', ')}`
-      );
+      throw new Error(`Champs obligatoires manquants : ${missingFields.join(', ')}`);
     }
 
     const cover_image = thumbnail?.url || null;
@@ -45,7 +42,7 @@ export const Form = {
     try {
       await connection.beginTransaction();
 
-      // 1️⃣ Insertion du film
+      // 1️⃣ Insertion du film (avec la colonne director_id)
       const [movieResult] = await connection.query(
         `INSERT INTO movies (
           original_title, english_title, youtube_url, duration,
@@ -56,7 +53,7 @@ export const Form = {
           original_title,
           english_title,
           youtube_url,
-          parseInt(duration),
+          parseInt(duration) || 0,
           is_hybrid ? 1 : 0,
           language,
           original_synopsis,
@@ -65,21 +62,21 @@ export const Form = {
           ia_tools,
           has_subs ? 1 : 0,
           cover_image,
-          finalDirectorId
+          directorId || null // L'ID 50 (ou autre) arrive ici
         ]
       );
 
       const movieId = movieResult.insertId;
 
-      // 2️⃣ Update director
-      if (finalDirectorId) {
+      // 2️⃣ Mise à jour du réalisateur (Liaison inverse si nécessaire)
+      if (directorId) {
         await connection.query(
           `UPDATE directors SET movie_id = ? WHERE id = ?`,
-          [movieId, finalDirectorId]
+          [movieId, directorId]
         );
       }
 
-      // 3️⃣ Insertion collaborateurs
+      // 3️⃣ Insertion des collaborateurs
       if (Array.isArray(collaborateurs)) {
         for (const collab of collaborateurs) {
           if (collab.nom?.trim()) {
@@ -92,16 +89,13 @@ export const Form = {
         }
       }
 
-      // 4️⃣ Insertion galerie (UNE SEULE FOIS)
+      // 4️⃣ Insertion de la galerie d'images
       if (Array.isArray(gallery) && gallery.length > 0) {
         for (const img of gallery) {
-          const imageUrl =
-            typeof img === 'string' ? img : img?.url;
-
+          const imageUrl = typeof img === 'string' ? img : img?.url;
           if (imageUrl?.trim()) {
             await connection.query(
-              `INSERT INTO images (url, movie_id)
-               VALUES (?, ?)`,
+              `INSERT INTO images (url, movie_id) VALUES (?, ?)`,
               [imageUrl, movieId]
             );
           }
@@ -113,6 +107,7 @@ export const Form = {
 
     } catch (err) {
       await connection.rollback();
+      console.error("🔥 Erreur MySQL dans le modèle:", err.message);
       throw err;
     } finally {
       connection.release();
