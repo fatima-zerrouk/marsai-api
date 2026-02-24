@@ -12,6 +12,7 @@ import adminMoviesRoutes from './routes/adminMovies.routes.js';
 import adminMoviesResult from './routes/adminMoviesResult.routes.js';
 import movieRoutes from './routes/movie.routes.js';
 import juryDashboard from './routes/juryDashboard.routes.js';
+import ratingsRoutes from './routes/rating.routes.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -38,6 +39,7 @@ app.use('/api/admin/movies', adminMoviesRoutes);
 app.use('/api/admin/movies-result', adminMoviesResult);
 app.use('/api/movies', movieRoutes);
 app.use('/dashboard/jury', juryDashboard);
+app.use('/ratings', ratingsRoutes);
 
 app.listen(port, () => console.log(`✅ Server listening on port ${port}`));
 
