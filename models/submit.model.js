@@ -22,7 +22,7 @@ export const Form = {
       ia_tools = '',
       has_subs = false,
       thumbnail,
-      gallery = []
+      gallery = [],
     } = formData;
 
     // ✅ Validation
@@ -65,7 +65,7 @@ export const Form = {
           ia_tools,
           has_subs ? 1 : 0,
           cover_image,
-          finalDirectorId
+          finalDirectorId,
         ]
       );
 
@@ -95,8 +95,7 @@ export const Form = {
       // 4️⃣ Insertion galerie (UNE SEULE FOIS)
       if (Array.isArray(gallery) && gallery.length > 0) {
         for (const img of gallery) {
-          const imageUrl =
-            typeof img === 'string' ? img : img?.url;
+          const imageUrl = typeof img === 'string' ? img : img?.url;
 
           if (imageUrl?.trim()) {
             await connection.query(
@@ -110,12 +109,11 @@ export const Form = {
 
       await connection.commit();
       return { insertId: movieId };
-
     } catch (err) {
       await connection.rollback();
       throw err;
     } finally {
       connection.release();
     }
-  }
+  },
 };
