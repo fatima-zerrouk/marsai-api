@@ -10,5 +10,4 @@ const router = Router();
 // si c'est bon affiche le dashboard
 router.get('/', authenticate, authorizeRoles('Jury'), juryDashboard);
 
-
 export default router;

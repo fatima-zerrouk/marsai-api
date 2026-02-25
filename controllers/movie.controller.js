@@ -7,10 +7,18 @@ export const getMovieById = async (req, res) => {
   try {
     const { id } = req.params;
 
+<<<<<<< feat/form-director
     const [movieRows] = await db.query('SELECT * FROM movies WHERE id = ?', [id]);
     
+=======
+    // 1. On récupère les infos du film (Correction du "WHERE id = 4")
+    const [movieRows] = await db.query('SELECT * FROM movies WHERE id = ?', [
+      id,
+    ]);
+
+>>>>>>> dev
     if (movieRows.length === 0) {
-      return res.status(404).json({ message: "Film non trouvé" });
+      return res.status(404).json({ message: 'Film non trouvé' });
     }
     const movie = movieRows[0];
 
@@ -19,6 +27,7 @@ export const getMovieById = async (req, res) => {
       [id]
     );
 
+<<<<<<< feat/form-director
     const [directorRows] = await db.query(
       `SELECT d.firstname, d.lastname
        FROM directors d
@@ -30,14 +39,43 @@ export const getMovieById = async (req, res) => {
     const directorName = directorRows.length > 0 
       ? `${directorRows[0].firstname} ${directorRows[0].lastname}` 
       : "Réalisateur inconnu";
+=======
+    // // 3. On récupère le réalisateur (Nom + Prénom)
+    // const [directorRows] = await db.query(
+    //   `SELECT u.firstname, u.lastname
+    //    FROM users u
+    //    JOIN movies m ON u.id = m.director_id
+    //    WHERE m.id = ?`,
+    //   [id]
+    // );
+
+    // 3. On récupère le réalisateur (Nom + Prénom) depuis la table directors
+    const [directorRows] = await db.query(
+      `SELECT d.firstname, d.lastname
+   FROM directors d
+   JOIN movies m ON d.id = m.director_id
+   WHERE m.id = ?`,
+      [id]
+    );
+
+    // On prépare le nom complet du réalisateur
+    const directorName =
+      directorRows.length > 0
+        ? `${directorRows[0].firstname} ${directorRows[0].lastname}`
+        : 'Réalisateur inconnu';
+>>>>>>> dev
 
     res.json({
       ...movie,
       collaborators: collabRows,
+<<<<<<< feat/form-director
       director: directorName
+=======
+      director: directorName, // ✅ On ajoute cette clé pour le Front
+>>>>>>> dev
     });
-
   } catch (error) {
+<<<<<<< feat/form-director
     console.error("❌ Erreur getMovieById:", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
@@ -111,3 +149,9 @@ export const submitMovieController = async (req, res) => {
     });
   }
 };
+=======
+    console.error(error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+>>>>>>> dev

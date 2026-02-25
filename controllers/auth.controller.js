@@ -60,7 +60,7 @@ export const register = async (req, res) => {
     });
   }
 
-  // Validation email (simple et efficace)
+  // Validation email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({
