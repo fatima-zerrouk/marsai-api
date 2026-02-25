@@ -1,15 +1,25 @@
 import create from '../models/rating.model.js';
 
-const createRating = (req, res) => {
-    const {rate, userId, movieId} = req.body;
-    create([rate, userId, movieId], (error, result) => {
-        if (error){
-            console.log("erreur lors de la requete sql", error.message);
-            return res.status(500).send("erreur serveur");
+const createRating = async (req, res) => {
+    try {
+        const { rate, movieId } = req.body;
+        const userId = req.user.id;
+
+        if (rate === undefined || movieId === undefined) {
+            return res.status(400).json({ message: "note ou id film manquant" });
         }
-        // res.json(result);
-         res.status(201).json({ message: "Note enregistrée", ratingId: result.insertId });
-    });
+
+        const result = await create(rate, userId, movieId);
+
+        res.status(201).json({
+            message: "Note enregistrée",
+            ratingId: result.insertId
+        });
+
+    } catch (error) {
+        console.error("erreur SQL :", error.message);
+        res.status(500).json({ message: "erreur serveur" });
+    }
 };
 
 export default createRating;
