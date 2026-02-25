@@ -52,7 +52,7 @@ export const User = {
 
     const userId = result.insertId;
 
-    // Assigner le rôle "user" par défaut
+    // Assigner le rôle "jury" par défaut
     const [roles] = await db.query('SELECT id FROM roles WHERE name = ?', [
       'jury',
     ]);
