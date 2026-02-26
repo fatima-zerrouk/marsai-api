@@ -12,20 +12,20 @@ import submitRoutes from './routes/submit.routes.js';
 import mailJury from './routes/juryMail.routes.js';
 import adminMoviesRoutes from './routes/adminMovies.routes.js';
 import adminMoviesResult from './routes/adminMoviesResult.routes.js';
-import movieRoutes from './routes/movie.routes.js';
+import movieRoutes from './routes/movies.routes.js';
 import juryDashboard from './routes/juryDashboard.routes.js';
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 // --- CONFIGURATION CORS ---
 app.use(
   cors({
     origin: [
       'http://localhost:5173',
-      'http://localhost:5174', 
+      'http://localhost:5174',
       'http://localhost:5175',
-      'http://localhost:5176'
+      'http://localhost:5176',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -60,6 +60,8 @@ app.listen(port, () => {
 db.getConnection()
   .then(() => console.log('✅ Database connected to MAMP MySQL'))
   .catch(err => {
-    console.error('❌ Database connection error. Check if MAMP is started and port is 8889.');
+    console.error(
+      '❌ Database connection error. Check if MAMP is started and port is 8889.'
+    );
     console.error(err.message);
   });
