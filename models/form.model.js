@@ -21,6 +21,7 @@ export const Form = {
       instagram,
     } = formData;
 
+    // Vérification des champs obligatoires
     if (
       !nom ||
       !prenom ||
@@ -37,6 +38,7 @@ export const Form = {
       throw new Error('Tous les champs obligatoires sont requis');
     }
 
+    // 1. Insertion du réalisateur (Director)
     const [directorResult] = await db.query(
       `INSERT INTO directors (
         firstname,
@@ -73,19 +75,26 @@ export const Form = {
         instagram,
       ]
     );
+
     const directorId = directorResult.insertId;
 
+    // 2. Insertion et liaison des collaborateurs
     if (Array.isArray(collaborateurs) && collaborateurs.length > 0) {
       for (const collaborateur of collaborateurs) {
         const { nom: lastname, role: contribution } = collaborateur;
-        await db.query(
-          `INSERT INTO collaborators (lastname, contribution)
-           VALUES (?, ?)`,
-          [lastname, contribution]
-        );
+        
+        // On n'insère que si les champs ne sont pas vides
+        if (lastname.trim() !== '' || contribution.trim() !== '') {
+          await db.query(
+            `INSERT INTO collaborators (lastname, contribution, director_id)
+             VALUES (?, ?, ?)`,
+            [lastname, contribution, directorId] // <-- Liaison établie ici
+          );
+        }
       }
     }
 
+    // On retourne l'ID pour que le contrôleur puisse le récupérer
     return { directorId };
   },
 };
