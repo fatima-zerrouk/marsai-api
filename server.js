@@ -52,6 +52,7 @@ app.use('/api/admin/movies-result', adminMoviesResult);
 app.use('/api/movies', movieRoutes); // C'est ici que /submit est géré pour les films
 app.use('/dashboard/jury', juryDashboard);
 app.use('/ratings', ratingsRoutes);
+app.use('/api/movies-and-directors', movieRoutes);
 
 // --- LANCEMENT DU SERVEUR ---
 app.listen(port, () => {
