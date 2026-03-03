@@ -1,5 +1,8 @@
 import express from 'express';
-import { getMovieById, getAllMovies } from '../controllers/movies.controller.js';
+import {
+  getMovieById,
+  getAllMovies,
+} from '../controllers/movies.controller.js';
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import multer from 'multer';
 
-// On utilise le stockage en mémoire (MemoryStorage) 
+// On utilise le stockage en mémoire (MemoryStorage)
 const storage = multer.memoryStorage();
 
 const upload = multer({

@@ -1,7 +1,13 @@
 import { db } from '../config/database.config.js';
 
 export const Form = {
-  create: async ({ formData, directorId, thumbnailUrl, videoUrl, galleryUrls }) => {
+  create: async ({
+    formData,
+    directorId,
+    thumbnailUrl,
+    videoUrl,
+    galleryUrls,
+  }) => {
     try {
       // 1. Insertion du film dans la table 'movies'
       const query = `
@@ -25,7 +31,7 @@ export const Form = {
       const params = [
         formData.original_title || '',
         formData.english_title || '',
-        videoUrl,         // L'URL Scaleway du fichier vidéo
+        videoUrl, // L'URL Scaleway du fichier vidéo
         formData.duration || 0,
         formData.is_hybrid ? 1 : 0,
         formData.language || 'FRENCH',
@@ -34,8 +40,8 @@ export const Form = {
         formData.creative_process || '',
         formData.ia_tools || '',
         formData.has_subs ? 1 : 0,
-        thumbnailUrl,     // URL de la vignette
-        directorId
+        thumbnailUrl, // URL de la vignette
+        directorId,
       ];
 
       const [result] = await db.query(query, params);
@@ -44,22 +50,27 @@ export const Form = {
       // 2. Insertion des images dans la table 'images' (id, url, movie_id)
       if (galleryUrls && movieId) {
         // On s'assure que galleryUrls est un tableau utilisable
-        const urls = typeof galleryUrls === 'string' ? JSON.parse(galleryUrls) : galleryUrls;
-        
+        const urls =
+          typeof galleryUrls === 'string'
+            ? JSON.parse(galleryUrls)
+            : galleryUrls;
+
         if (Array.isArray(urls) && urls.length > 0) {
           // Requête spécifique pour ta table 'images'
           const imageQuery = 'INSERT INTO images (url, movie_id) VALUES (?, ?)';
-          
+
           for (const imageUrl of urls) {
             await db.query(imageQuery, [imageUrl, movieId]);
           }
-          console.log(`✅ ${urls.length} images enregistrées dans la table 'images'.`);
+          console.log(
+            `✅ ${urls.length} images enregistrées dans la table 'images'.`
+          );
         }
       }
 
       return result;
     } catch (error) {
-      console.error("🔥 Erreur MySQL dans le modèle:", error.message);
+      console.error('🔥 Erreur MySQL dans le modèle:', error.message);
       throw error;
     }
   },

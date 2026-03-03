@@ -82,7 +82,7 @@ export const Form = {
     if (Array.isArray(collaborateurs) && collaborateurs.length > 0) {
       for (const collaborateur of collaborateurs) {
         const { nom: lastname, role: contribution } = collaborateur;
-        
+
         // On n'insère que si les champs ne sont pas vides
         if (lastname.trim() !== '' || contribution.trim() !== '') {
           await db.query(
