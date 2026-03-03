@@ -8,6 +8,7 @@ export const getAllMoviesWithDirector = async () => {
     m.english_title,
     m.language,
     m.duration,
+    m.ia_tools,
     d.country,
     CONCAT(d.firstname,' ',d.lastname) AS director_name
   FROM movies m

@@ -3,6 +3,18 @@ import { Form } from '../models/submit.model.js';
 import { uploadToScaleway } from '../services/uploadService.js';
 import { getAllMoviesWithDirector } from '../models/movies.model.js';
 
+export const getAllMovies = async (req, res) => {
+  try {
+    const movies = await getAllMoviesWithDirector();
+    res.json(movies);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Impossible de récupérer les movies' });
+  }
+};
+
+// Ajouter autres méthodes du CRUD
+
 // --- FONCTION 1 : RÉCUPÉRER UN FILM ---
 export const getMovieById = async (req, res) => {
   try {
@@ -116,15 +128,5 @@ export const submitMovieController = async (req, res) => {
       message: "Erreur lors de l'enregistrement",
       error: error.message,
     });
-  }
-};
-
-export const getAllMovies = async (req, res) => {
-  try {
-    const movies = await getAllMoviesWithDirector();
-    res.json(movies);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Impossible de récupérer les movies' });
   }
 };

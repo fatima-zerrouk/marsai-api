@@ -12,12 +12,12 @@ import submitRoutes from './routes/submit.routes.js';
 import mailJury from './routes/juryMail.routes.js';
 import adminMoviesRoutes from './routes/adminMovies.routes.js';
 import adminMoviesResult from './routes/adminMoviesResult.routes.js';
-import movieRoutes from './routes/movie.routes.js';
+import movieRoutes from './routes/movies.routes.js';
 import juryDashboard from './routes/juryDashboard.routes.js';
 import ratingsRoutes from './routes/rating.routes.js';
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 // --- CONFIGURATION CORS ---
 app.use(
