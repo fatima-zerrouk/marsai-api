@@ -1,6 +1,6 @@
 import express from 'express';
 import { createForm } from '../controllers/submit.controller.js';
-import upload from '../utils/multer.js'; 
+import upload from '../utils/multer.js';
 import { submitMovieController } from '../controllers/submit.controller.js';
 
 const router = express.Router();
@@ -9,12 +9,10 @@ const router = express.Router();
 const uploadFields = upload.fields([
   { name: 'thumbnail', maxCount: 1 },
   { name: 'video', maxCount: 1 },
-  { name: 'gallery', maxCount: 3 }
+  { name: 'gallery', maxCount: 3 },
 ]);
 
 router.post('/submit', uploadFields, submitMovieController);
-
-
 
 router.post('/', createForm);
 

@@ -19,5 +19,3 @@ export const getAllMoviesWithDirector = async () => {
   const [rows] = await db.query(query);
   return rows;
 };
-
-// Ajouter autres requêtes du CRUD

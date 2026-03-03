@@ -14,6 +14,7 @@ import adminMoviesRoutes from './routes/adminMovies.routes.js';
 import adminMoviesResult from './routes/adminMoviesResult.routes.js';
 import movieRoutes from './routes/movies.routes.js';
 import juryDashboard from './routes/juryDashboard.routes.js';
+import ratingsRoutes from './routes/rating.routes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -50,6 +51,8 @@ app.use('/api/admin/movies', adminMoviesRoutes);
 app.use('/api/admin/movies-result', adminMoviesResult);
 app.use('/api/movies', movieRoutes); // C'est ici que /submit est géré pour les films
 app.use('/dashboard/jury', juryDashboard);
+app.use('/ratings', ratingsRoutes);
+app.use('/api/movies-and-directors', movieRoutes);
 
 // --- LANCEMENT DU SERVEUR ---
 app.listen(port, () => {

@@ -2,7 +2,7 @@ import { Form } from '../models/submit.model.js';
 
 import { uploadToScaleway } from '../services/uploadService.js';
 // Importe ton modèle de base de données (ex: Movie)
-// import Movie from '../models/movie.model.js'; 
+// import Movie from '../models/movie.model.js';
 
 export const submitMovieController = async (req, res) => {
   try {
@@ -25,7 +25,7 @@ export const submitMovieController = async (req, res) => {
 
     // 3. Upload de la galerie (plusieurs fichiers)
     if (files.gallery) {
-      const uploadPromises = files.gallery.map(file => 
+      const uploadPromises = files.gallery.map(file =>
         uploadToScaleway(file, 'gallery')
       );
       galleryUrls = await Promise.all(uploadPromises);
@@ -43,15 +43,14 @@ export const submitMovieController = async (req, res) => {
     });
     */
 
-    console.log("Upload réussi :", { thumbnailUrl, videoUrl, galleryUrls });
+    console.log('Upload réussi :', { thumbnailUrl, videoUrl, galleryUrls });
 
     res.status(201).json({
-      message: "Film enregistré avec succès sur Scaleway",
-      data: { thumbnailUrl, videoUrl, galleryUrls }
+      message: 'Film enregistré avec succès sur Scaleway',
+      data: { thumbnailUrl, videoUrl, galleryUrls },
     });
-
   } catch (error) {
-    console.error("Erreur Controller SubmitMovie:", error);
+    console.error('Erreur Controller SubmitMovie:', error);
     res.status(500).json({ error: "Erreur lors de l'enregistrement du film" });
   }
 };
@@ -59,7 +58,7 @@ export const submitMovieController = async (req, res) => {
 export const createForm = async (req, res) => {
   try {
     console.log('💡 DONNÉES REÇUES :', req.body);
-    
+
     // On extrait formData, collaborateurs ET le fameux directorId
     const { formData, collaborateurs, directorId } = req.body;
 
