@@ -128,70 +128,48 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     let { email, password } = req.body;
+    console.log('🔹 Login attempt with:', { email, password });
 
-    // Vérification présence champs
     if (!email || !password) {
-      return res.status(400).json({
-        message: 'Email et mot de passe requis',
-      });
+      console.log('❌ Missing email or password');
+      return res.status(400).json({ message: 'Email et mot de passe requis' });
     }
 
-    // Normalisation email
     email = email.trim().toLowerCase();
+    console.log('🔹 Normalized email:', email);
 
-    // Validation format email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(401).json({
-        message: 'Identifiants invalides',
-      });
-    }
-
-    // Recherche utilisateur
     const user = await User.findByEmail(email);
+    console.log('🔹 User found in DB:', user);
 
     if (!user) {
-      return res.status(401).json({
-        message: 'Identifiants invalides',
-      });
+      console.log('❌ No user with this email');
+      return res.status(401).json({ message: 'Identifiants invalides' });
     }
 
-    // Vérification mot de passe
     const isValidPassword = await bcrypt.compare(password, user.password);
+    console.log('🔹 Password match:', isValidPassword);
 
     if (!isValidPassword) {
-      return res.status(401).json({
-        message: 'Identifiants invalides',
-      });
+      console.log('❌ Password mismatch');
+      return res.status(401).json({ message: 'Identifiants invalides' });
     }
 
-    // Vérification obligation changement mot de passe
     if (user.must_change_password) {
-      return res.status(200).json({
-        mustChangePassword: true,
-        userId: user.id,
-      });
+      console.log('🔹 User must change password');
+      return res.status(200).json({ mustChangePassword: true, userId: user.id });
     }
 
-    // Génération du token JWT
     const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        roles: user.roles,
-      },
+      { id: user.id, email: user.email, roles: user.roles },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
+    console.log('🔹 JWT generated:', token);
 
-    return res.status(200).json({
-      token,
-    });
-  } catch (error) {
-    console.error('Erreur login :', error);
-    return res.status(500).json({
-      message: 'Erreur serveur',
-    });
+    return res.status(200).json({ token });
+  } catch (err) {
+    console.error('❌ Erreur login:', err);
+    return res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 

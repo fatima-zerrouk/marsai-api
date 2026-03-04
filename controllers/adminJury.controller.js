@@ -98,4 +98,38 @@ export const AdminJuryController = {
       res.status(500).json({ error: 'Erreur envoi email' });
     }
   },
+
+  async distributeMovies(req, res) {
+    try {
+      const result = await AdminJuryModel.distributeMovies();
+      res.json(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  },
+
+  // AdminJuryController.js
+  async distributeMovies(req, res) {
+    try {
+      const result = await AdminJuryModel.distributeMovies();
+      res.json(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  },
+
+  // ✅ CORRECT: on appelle la fonction du model, pas db.query
+  async getDistributions(req, res) {
+    try {
+      const distributions = await AdminJuryModel.getDistributions();
+      res.json(distributions);
+    } catch (err) {
+      console.error(err);
+      res
+        .status(500)
+        .json({ error: 'Impossible de récupérer les distributions' });
+    }
+  },
 };

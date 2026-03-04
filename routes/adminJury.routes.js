@@ -32,5 +32,18 @@ router.post(
   authorizeRoles('Admin'),
   AdminJuryController.createJury
 );
+router.post(
+  '/distribute-movies',
+  authenticate,
+  authorizeRoles('Admin'),
+  AdminJuryController.distributeMovies
+);
+// Backend
+router.get(
+  '/distributions',
+  authenticate,
+  authorizeRoles('Admin'),
+  AdminJuryController.getDistributions
+);
 
 export default router;

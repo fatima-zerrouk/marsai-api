@@ -73,5 +73,5 @@ export const Form = {
       console.error('🔥 Erreur MySQL dans le modèle:', error.message);
       throw error;
     }
-  }
+  },
 };
