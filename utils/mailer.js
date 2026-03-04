@@ -51,3 +51,53 @@ export async function sendMail({ toEmail, toName }) {
     return { success: false, message: 'Erreur lors de l’envoi du mail' };
   }
 }
+
+
+export async function sendMovieStatusMail({ toEmail, toName, status, movieTitle }) {
+  if (!toEmail) throw new Error('Aucun destinataire défini');
+
+  const isApproved = status === 'approved';
+  const isRejected = status === 'rejected';
+  const isNonConform = status === 'isconform';
+
+  let subject = '';
+  let message = '';
+
+  if (isApproved) {
+    subject = `Votre film "${movieTitle}" a été accepté !`;
+    message = `Nous avons le plaisir de vous informer que votre film <strong>${movieTitle}</strong> a été accepté et publié dans la galerie.`;
+  }
+
+  if (isRejected) {
+    subject = `Votre film "${movieTitle}" a été refusé`;
+    message = `Nous sommes désolés de vous informer que votre film <strong>${movieTitle}</strong> n'a pas été retenu.`;
+  }
+
+  if (isNonConform) {
+    subject = `Votre film "${movieTitle}" est non conforme`;
+    message = `Votre film <strong>${movieTitle}</strong> a été jugé non conforme aux règles du concours.`;
+  }
+
+  const mailOptions = {
+    from: `"${process.env.MAIL_FROM_NAME}" <${process.env.SMTP_USER}>`,
+    to: toEmail,
+    subject,
+    html: `
+      <div style="font-family: Arial; padding: 30px;">
+        <h2>Bonjour ${toName},</h2>
+        <p>${message}</p>
+        <p>Merci pour votre participation à MarsAI</p>
+      </div>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    return info.accepted.includes(toEmail)
+      ? { success: true }
+      : { success: false };
+  } catch (error) {
+    console.error('Erreur envoi email statut film :', error);
+    return { success: false };
+  }
+}
