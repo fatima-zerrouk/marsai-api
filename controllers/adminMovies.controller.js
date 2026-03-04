@@ -1,4 +1,5 @@
 import * as MovieModel from '../models/adminMovies.model.js';
+import { sendMovieStatusMail } from '../utils/mailer.js';
 
 export const getMovies = async (req, res) => {
   try {
@@ -33,13 +34,41 @@ export const createMovie = async (req, res) => {
 
 export const updateMovie = async (req, res) => {
   try {
-    const updatedMovie = await MovieModel.updateMovie(req.params.id, req.body);
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const movieBeforeUpdate = await MovieModel.getMovieWithDirectorById(id);
+
+    if (!movieBeforeUpdate) {
+      return res.status(404).json({ error: 'Film introuvable' });
+    }
+
+    const updatedMovie = await MovieModel.updateMovie(id, req.body);
+
+    const validStatuses = ['approved', 'rejected', 'isconform'];
+
+    if (
+      status &&
+      validStatuses.includes(status) &&
+      movieBeforeUpdate.status !== status
+    ) {
+      await sendMovieStatusMail({
+        toEmail: movieBeforeUpdate.email,
+        toName: movieBeforeUpdate.firstname,
+        status,
+        movieTitle: movieBeforeUpdate.original_title,
+      });
+    }
+
     res.json(updatedMovie);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Impossible de mettre à jour le film' });
   }
 };
+
+
 
 export const deleteMovie = async (req, res) => {
   try {
