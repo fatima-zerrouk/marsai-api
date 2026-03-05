@@ -156,7 +156,9 @@ export const login = async (req, res) => {
 
     if (user.must_change_password) {
       console.log('🔹 User must change password');
-      return res.status(200).json({ mustChangePassword: true, userId: user.id });
+      return res
+        .status(200)
+        .json({ mustChangePassword: true, userId: user.id });
     }
 
     const token = jwt.sign(
