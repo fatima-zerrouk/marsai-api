@@ -68,7 +68,7 @@ export const deleteMovie = async id => {
   return result.affectedRows;
 };
 
-export const getMovieWithDirectorById = async (id) => {
+export const getMovieWithDirectorById = async id => {
   const [rows] = await db.query(
     `SELECT m.original_title, m.status, d.email, d.firstname
      FROM movies m

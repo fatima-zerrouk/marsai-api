@@ -61,14 +61,11 @@ export const updateMovie = async (req, res) => {
     }
 
     res.json(updatedMovie);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Impossible de mettre à jour le film' });
   }
 };
-
-
 
 export const deleteMovie = async (req, res) => {
   try {
