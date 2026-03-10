@@ -93,8 +93,7 @@ export const AdminJuryModel = {
   `);
 
     const [movies] = await db.query(`
-    SELECT id FROM movies
-    WHERE status = 'approved'
+      SELECT id FROM movies
   `);
 
     if (!juries.length || !movies.length) {
