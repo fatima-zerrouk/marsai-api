@@ -77,3 +77,22 @@ export const deleteMovie = async (req, res) => {
     res.status(500).json({ error: 'Impossible de supprimer le film' });
   }
 };
+
+export const toggleMovieVisibility = async (req, res) => {
+  try {
+    const result = await MovieModel.toggleMovieVisibility(req.params.id);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: 'Impossible de modifier la visibilité' });
+  }
+};
+
+export const getPublicMovies = async (req, res) => {
+  try {
+    const movies = await MovieModel.getPublicMovies();
+    res.json(movies);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Impossible de récupérer les films' });
+  }
+};
