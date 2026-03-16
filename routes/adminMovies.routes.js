@@ -39,4 +39,13 @@ router.delete(
   MovieController.deleteMovie
 );
 
+router.put(
+  '/:id/visibility',
+  authenticate,
+  authorizeRoles('Admin'),
+  MovieController.toggleMovieVisibility
+);
+
+router.get('/movies/public', MovieController.getPublicMovies);
+
 export default router;

@@ -1,5 +1,3 @@
-
-
 import db from '../config/database.config.js';
 
 export const Dashboard = {

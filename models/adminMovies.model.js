@@ -79,3 +79,34 @@ export const getMovieWithDirectorById = async id => {
 
   return rows[0] || null;
 };
+
+export const toggleMovieVisibility = async id => {
+  const [movie] = await db.query('SELECT is_visible FROM movies WHERE id = ?', [
+    id,
+  ]);
+
+  if (!movie.length) {
+    return null;
+  }
+
+  const newVisibility = movie[0].is_visible ? 0 : 1;
+
+  await db.query('UPDATE movies SET is_visible = ? WHERE id = ?', [
+    newVisibility,
+    id,
+  ]);
+
+  return { message: 'Visibilité modifiée' };
+};
+
+export const getPublicMovies = async () => {
+  const [rows] = await db.query(`
+    SELECT *
+    FROM movies
+    WHERE status = 'approved'
+    AND is_visible = 1
+    ORDER BY submitted_at DESC
+  `);
+
+  return rows;
+};

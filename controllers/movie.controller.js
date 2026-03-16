@@ -20,9 +20,10 @@ export const getMovieById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [movieRows] = await db.query('SELECT * FROM movies WHERE id = ?', [
-      id,
-    ]);
+    const [movieRows] = await db.query(
+      'SELECT * FROM movies WHERE id = ? AND status = "approved" AND is_visible = 1',
+      [id]
+    );
 
     if (movieRows.length === 0) {
       return res.status(404).json({ message: 'Film non trouvé' });

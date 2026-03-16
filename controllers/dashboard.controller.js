@@ -1,5 +1,3 @@
-
-
 import { Dashboard } from '../models/Dashboard.model.js';
 
 export const getAdminDashboard = async (req, res) => {
